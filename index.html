@@ -3,50 +3,186 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Quando il Vicenza vince il campionato?</title>
+  <title>Vicenza Clinch Calculator</title>
   <style>
     :root{
       --bg:#0b1020; --card:#121a33; --txt:#e9edff; --muted:#aab2d5;
-      --ok:#42f5a1; --line:rgba(255,255,255,0.10);
+      --accent:#6ee7ff; --ok:#42f5a1; --danger:#ff6b6b; --line:#26325c;
+      --radius:16px;
+      --btn-pad:12px 16px;
     }
     *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-    body{margin:0;background:radial-gradient(1000px 600px at 20% 0%, #18245a 0%, var(--bg) 55%); color:var(--txt)}
-    .wrap{max-width:1020px;margin:0 auto;padding:26px 16px 46px}
-    h1{margin:0;font-size:28px;line-height:1.12}
-    p{margin:10px 0 0;color:var(--muted);line-height:1.45}
-    .grid{display:grid;grid-template-columns:1.15fr 0.85fr;gap:14px;margin-top:18px}
-    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    body{
+      margin:0;
+      background:radial-gradient(1000px 600px at 20% 0%, #18245a 0%, var(--bg) 55%);
+      color:var(--txt);
+      font-size:15px;
+    }
+    .wrap{
+      max-width:1020px;
+      margin:0 auto;
+      padding:24px 16px 50px;
+    }
+    header{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-bottom:18px;
+    }
+    h1{
+      margin:0;
+      font-size:28px;
+      line-height:1.12;
+      font-weight:800;
+    }
+    p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.45;
+      font-size:14px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1.15fr 0.85fr;
+      gap:14px;
+      margin-top:18px;
+    }
+    @media (max-width:900px){
+      .grid{grid-template-columns:1fr}
+    }
     .card{
       background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
       border:1px solid rgba(255,255,255,0.10);
-      border-radius:16px;padding:16px
+      border-radius:var(--radius);
+      padding:16px;
     }
-    .card h2{margin:0 0 10px;font-size:14px;letter-spacing:0.2px;color:var(--muted);font-weight:700}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media (max-width:520px){.row{grid-template-columns:1fr}}
-    label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted)}
+    .card h2{
+      margin:0 0 10px;
+      font-size:14px;
+      letter-spacing:0.2px;
+      color:var(--muted);
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+    }
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    @media (max-width:520px){
+      .row{grid-template-columns:1fr}
+    }
+    label{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      font-size:13px;
+      color:var(--muted);
+    }
     input{
-      width:100%; padding:12px 12px; border-radius:12px;
+      width:100%;
+      padding:12px 12px;
+      border-radius:12px;
       border:1px solid rgba(255,255,255,0.14);
-      background:rgba(0,0,0,0.18); color:var(--txt); outline:none;
+      background:rgba(0,0,0,0.18);
+      color:var(--txt);
+      outline:none;
+      font-size:14px;
     }
-    input:focus{border-color:rgba(110,231,255,0.55); box-shadow:0 0 0 4px rgba(110,231,255,0.12)}
-    .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    input:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 4px rgba(110,231,255,0.12);
+    }
+    .btns{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
     button{
-      padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);
-      background:rgba(110,231,255,0.12); color:var(--txt); cursor:pointer; font-weight:750
+      padding:var(--btn-pad);
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.14);
+      background:rgba(110,231,255,0.12);
+      color:var(--txt);
+      cursor:pointer;
+      font-weight:750;
+      font-size:14px;
     }
-    button.secondary{background:transparent}
-    .kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
-    .box{border:1px solid var(--line); border-radius:14px; padding:12px; background:rgba(0,0,0,0.14)}
-    .small{font-size:12px;color:var(--muted)}
-    .big{font-size:22px;font-weight:900;margin-top:6px}
-    .hr{height:1px;background:rgba(255,255,255,0.10);margin:12px 0}
-    table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
-    th,td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,0.08);text-align:right;vertical-align:top}
-    th:first-child, td:first-child{text-align:left}
+    button.secondary{
+      background:transparent;
+    }
+    .pill{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.12);
+      color:var(--muted);
+      font-size:12px;
+    }
+    .kpi{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:6px;
+    }
+    .box{
+      border:1px solid rgba(255,255,255,0.10);
+      border-radius:var(--radius);
+      padding:12px;
+      background:rgba(0,0,0,0.14);
+    }
+    .small{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .big{
+      font-size:22px;
+      font-weight:900;
+      margin-top:6px;
+    }
     .ok{color:var(--ok);font-weight:800}
-    .note{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.45}
+    .danger{color:var(--danger)}
+    .hr{
+      height:1px;
+      background:rgba(255,255,255,0.10);
+      margin:12px 0;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:12px;
+      font-size:12px;
+    }
+    th,td{
+      padding:10px 8px;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+      text-align:right;
+      vertical-align:top;
+    }
+    th{
+      font-weight:700;
+      color:var(--muted);
+    }
+    th:first-child, td:first-child{
+      text-align:left;
+    }
+    .note{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.45;
+    }
+    /* mobile: più spazio ai pulsanti e input */
+    @media (max-width:520px){
+      input{padding:14px 14px;font-size:15px}
+      button{padding:14px 16px;font-size:15px}
+      .btns{margin-top:14px}
+    }
   </style>
 </head>
 
@@ -55,12 +191,15 @@
     <header>
       <h1>Quando il Vicenza vincerà il campionato?</h1>
       <p>Dati fissi: 14 partite rimanenti, Vicenza 62 punti, Villain 46 punti (gap 16).</p>
-      <p class="small">Vicenza è campione quando il gap previsto supera il massimo recuperabile dal Villain: 3 × partite rimanenti. [web:45]</p>
+      <p class="small">
+        Vicenza è campione quando il gap previsto supera il massimo recuperabile dal Villain:
+        <span class="pill">3 × partite rimanenti</span>.
+      </p>
     </header>
 
     <div class="grid">
       <section class="card">
-        <h2>Input</h2>
+        <h2>Input utente</h2>
 
         <div class="row">
           <label>
@@ -81,7 +220,7 @@
         </div>
 
         <div class="note">
-          Nota: i punti in tabella sono mostrati come interi arrotondati (Math.round). [web:82]
+          I punti in tabella sono mostrati come interi arrotondati.
         </div>
       </section>
 
@@ -111,8 +250,10 @@
     </div>
 
     <section class="card" style="margin-top:14px">
-      <h2>Simulazione (k=0..14)</h2>
-      <div class="small">k = partite giocate da ora; R = partite rimanenti; B = 3×R; Punti = punti attesi (mostrati come interi).</div>
+      <h2>Simulazione (k = 0..14)</h2>
+      <div class="small">
+        k = partite giocate da ora; R = partite rimanenti; B = 3×R; Punti = punti attesi (arrotondati a intero).
+      </div>
 
       <table>
         <thead>
@@ -145,7 +286,7 @@
     const clamp = (n, min, max) => Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : NaN;
 
     // Arrotondamento a intero per visualizzare punti in tabella/UI
-    const int = (n) => Math.round(n); // intero più vicino [web:82]
+    const int = (n) => Math.round(n);
 
     function compute(mV, mVi){
       const rows = [];
@@ -274,4 +415,3 @@
   </script>
 </body>
 </html>
-
