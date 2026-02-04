@@ -3,185 +3,488 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Vicenza Clinch Calculator</title>
+  <meta name="description" content="Calcola quando il Vicenza vincerà matematicamente il campionato basandosi sulle medie punti attese" />
+  <title>🏆 Vicenza Clinch Calculator</title>
   <style>
     :root{
-      --bg:#0b1020; --card:#121a33; --txt:#e9edff; --muted:#aab2d5;
-      --accent:#6ee7ff; --ok:#42f5a1; --danger:#ff6b6b; --line:#26325c;
-      --radius:16px;
-      --btn-pad:12px 16px;
+      --bg-dark:#050a1a;
+      --bg-grad-start:#0f1729;
+      --bg-grad-end:#1a2744;
+      --card-bg:rgba(255,255,255,0.03);
+      --card-border:rgba(255,255,255,0.08);
+      --txt:#f0f4ff;
+      --txt-muted:#a0aac8;
+      --accent:#00d9ff;
+      --accent-hover:#00b8e6;
+      --success:#00ff88;
+      --success-bg:rgba(0,255,136,0.12);
+      --danger:#ff4757;
+      --warning:#ffa502;
+      --input-bg:rgba(0,0,0,0.3);
+      --input-border:rgba(255,255,255,0.12);
+      --shadow-sm:0 2px 8px rgba(0,0,0,0.15);
+      --shadow-md:0 4px 16px rgba(0,0,0,0.2);
+      --shadow-lg:0 8px 32px rgba(0,0,0,0.3);
+      --radius-sm:10px;
+      --radius-md:14px;
+      --radius-lg:18px;
+      --transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
     }
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-    body{
+    
+    *{
+      box-sizing:border-box;
       margin:0;
-      background:radial-gradient(1000px 600px at 20% 0%, #18245a 0%, var(--bg) 55%);
+      padding:0;
+    }
+    
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+      background:linear-gradient(135deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
+      background-attachment:fixed;
       color:var(--txt);
       font-size:15px;
+      line-height:1.6;
+      min-height:100vh;
+      position:relative;
+      overflow-x:hidden;
     }
+    
+    body::before{
+      content:'';
+      position:fixed;
+      top:-50%;
+      right:-50%;
+      width:200%;
+      height:200%;
+      background:radial-gradient(circle, rgba(0,217,255,0.08) 0%, transparent 50%);
+      animation:rotate 60s linear infinite;
+      pointer-events:none;
+      z-index:0;
+    }
+    
+    @keyframes rotate{
+      from{transform:rotate(0deg)}
+      to{transform:rotate(360deg)}
+    }
+    
     .wrap{
-      max-width:1020px;
+      max-width:1200px;
       margin:0 auto;
-      padding:24px 16px 50px;
+      padding:32px 20px 60px;
+      position:relative;
+      z-index:1;
     }
+    
     header{
+      text-align:center;
+      margin-bottom:40px;
+      animation:fadeIn 0.6s ease;
+    }
+    
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(-20px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    
+    h1{
+      font-size:clamp(28px, 5vw, 42px);
+      font-weight:800;
+      background:linear-gradient(135deg, var(--accent) 0%, var(--success) 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+      margin-bottom:12px;
+      letter-spacing:-0.02em;
+    }
+    
+    .subtitle{
+      font-size:16px;
+      color:var(--txt-muted);
+      max-width:600px;
+      margin:0 auto 16px;
+    }
+    
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 14px;
+      background:rgba(0,217,255,0.15);
+      border:1px solid rgba(0,217,255,0.3);
+      border-radius:999px;
+      font-size:13px;
+      font-weight:600;
+      color:var(--accent);
+      margin-top:8px;
+    }
+    
+    .grid{
+      display:grid;
+      grid-template-columns:1.2fr 0.8fr;
+      gap:20px;
+      margin-bottom:24px;
+    }
+    
+    @media (max-width:900px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+    }
+    
+    .card{
+      background:var(--card-bg);
+      backdrop-filter:blur(10px);
+      border:1px solid var(--card-border);
+      border-radius:var(--radius-lg);
+      padding:24px;
+      box-shadow:var(--shadow-md);
+      transition:var(--transition);
+      animation:slideUp 0.5s ease;
+    }
+    
+    @keyframes slideUp{
+      from{opacity:0;transform:translateY(30px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    
+    .card:hover{
+      box-shadow:var(--shadow-lg);
+      border-color:rgba(255,255,255,0.15);
+    }
+    
+    .card h2{
+      font-size:13px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      color:var(--txt-muted);
+      margin-bottom:18px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    
+    .card h2::before{
+      content:'';
+      width:4px;
+      height:18px;
+      background:linear-gradient(180deg, var(--accent), var(--success));
+      border-radius:2px;
+    }
+    
+    .input-group{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+      margin-bottom:20px;
+    }
+    
+    @media (max-width:600px){
+      .input-group{
+        grid-template-columns:1fr;
+        gap:14px;
+      }
+    }
+    
+    label{
       display:flex;
       flex-direction:column;
       gap:8px;
-      margin-bottom:18px;
     }
-    h1{
-      margin:0;
-      font-size:28px;
-      line-height:1.12;
-      font-weight:800;
+    
+    .label-text{
+      font-size:13px;
+      font-weight:600;
+      color:var(--txt-muted);
+      display:flex;
+      align-items:center;
+      gap:6px;
     }
-    p{
-      margin:0;
-      color:var(--muted);
-      line-height:1.45;
-      font-size:14px;
+    
+    .label-icon{
+      width:16px;
+      height:16px;
+      opacity:0.7;
     }
-    .grid{
+    
+    input{
+      width:100%;
+      padding:14px 16px;
+      background:var(--input-bg);
+      border:2px solid var(--input-border);
+      border-radius:var(--radius-md);
+      color:var(--txt);
+      font-size:16px;
+      font-weight:600;
+      outline:none;
+      transition:var(--transition);
+    }
+    
+    input:focus{
+      border-color:var(--accent);
+      background:rgba(0,217,255,0.05);
+      box-shadow:0 0 0 4px rgba(0,217,255,0.1);
+    }
+    
+    input::placeholder{
+      color:var(--txt-muted);
+      opacity:0.5;
+    }
+    
+    .btns{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    
+    button{
+      padding:14px 24px;
+      border:none;
+      border-radius:var(--radius-md);
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+      transition:var(--transition);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      position:relative;
+      overflow:hidden;
+    }
+    
+    button::before{
+      content:'';
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:0;
+      height:0;
+      border-radius:50%;
+      background:rgba(255,255,255,0.2);
+      transform:translate(-50%,-50%);
+      transition:width 0.6s, height 0.6s;
+    }
+    
+    button:active::before{
+      width:300px;
+      height:300px;
+    }
+    
+    .btn-primary{
+      background:linear-gradient(135deg, var(--accent) 0%, var(--success) 100%);
+      color:var(--bg-dark);
+      box-shadow:0 4px 12px rgba(0,217,255,0.3);
+    }
+    
+    .btn-primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(0,217,255,0.4);
+    }
+    
+    .btn-secondary{
+      background:rgba(255,255,255,0.08);
+      color:var(--txt);
+      border:1px solid var(--input-border);
+    }
+    
+    .btn-secondary:hover{
+      background:rgba(255,255,255,0.12);
+      border-color:rgba(255,255,255,0.2);
+    }
+    
+    .kpi-grid{
       display:grid;
-      grid-template-columns:1.15fr 0.85fr;
-      gap:14px;
-      margin-top:18px;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-bottom:20px;
     }
-    @media (max-width:900px){
-      .grid{grid-template-columns:1fr}
-    }
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-      border:1px solid rgba(255,255,255,0.10);
-      border-radius:var(--radius);
+    
+    .kpi-box{
+      background:rgba(0,0,0,0.25);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:var(--radius-md);
       padding:16px;
+      text-align:center;
+      transition:var(--transition);
     }
-    .card h2{
-      margin:0 0 10px;
+    
+    .kpi-box:hover{
+      border-color:var(--accent);
+      background:rgba(0,217,255,0.05);
+    }
+    
+    .kpi-label{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      color:var(--txt-muted);
+      margin-bottom:8px;
+      font-weight:600;
+    }
+    
+    .kpi-value{
+      font-size:32px;
+      font-weight:900;
+      background:linear-gradient(135deg, var(--accent), var(--success));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    
+    .detail-box{
+      background:rgba(0,0,0,0.25);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:var(--radius-md);
+      padding:16px;
+      margin-top:20px;
+    }
+    
+    .detail-label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      color:var(--txt-muted);
+      margin-bottom:8px;
+      font-weight:700;
+    }
+    
+    .detail-text{
+      color:var(--txt);
       font-size:14px;
-      letter-spacing:0.2px;
-      color:var(--muted);
+      line-height:1.6;
+    }
+    
+    .hr{
+      height:1px;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      margin:20px 0;
+    }
+    
+    .table-wrapper{
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      border-radius:var(--radius-md);
+      border:1px solid var(--card-border);
+      background:rgba(0,0,0,0.2);
+    }
+    
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:700px;
+    }
+    
+    thead{
+      background:rgba(0,0,0,0.3);
+      position:sticky;
+      top:0;
+      z-index:2;
+    }
+    
+    th{
+      padding:14px 12px;
+      text-align:right;
+      font-size:11px;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      color:var(--txt-muted);
+      border-bottom:2px solid rgba(0,217,255,0.3);
+    }
+    
+    th:first-child{
+      text-align:left;
+    }
+    
+    td{
+      padding:12px;
+      text-align:right;
+      font-size:14px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      transition:var(--transition);
+    }
+    
+    td:first-child{
+      text-align:left;
+      font-weight:600;
+    }
+    
+    tbody tr:hover{
+      background:rgba(0,217,255,0.05);
+    }
+    
+    .badge{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:6px;
+      font-size:11px;
       font-weight:700;
       text-transform:uppercase;
       letter-spacing:0.5px;
     }
-    .row{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-bottom:12px;
+    
+    .badge-success{
+      background:var(--success-bg);
+      color:var(--success);
+      border:1px solid rgba(0,255,136,0.3);
     }
-    @media (max-width:520px){
-      .row{grid-template-columns:1fr}
+    
+    .badge-pending{
+      background:rgba(255,255,255,0.05);
+      color:var(--txt-muted);
+      border:1px solid rgba(255,255,255,0.1);
     }
-    label{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      font-size:13px;
-      color:var(--muted);
-    }
-    input{
-      width:100%;
-      padding:12px 12px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,0.14);
-      background:rgba(0,0,0,0.18);
-      color:var(--txt);
-      outline:none;
-      font-size:14px;
-    }
-    input:focus{
-      border-color:var(--accent);
-      box-shadow:0 0 0 4px rgba(110,231,255,0.12);
-    }
-    .btns{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-    button{
-      padding:var(--btn-pad);
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,0.14);
-      background:rgba(110,231,255,0.12);
-      color:var(--txt);
-      cursor:pointer;
-      font-weight:750;
-      font-size:14px;
-    }
-    button.secondary{
-      background:transparent;
-    }
-    .pill{
-      display:inline-flex;
-      gap:6px;
-      align-items:center;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,0.12);
-      color:var(--muted);
-      font-size:12px;
-    }
-    .kpi{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:6px;
-    }
-    .box{
-      border:1px solid rgba(255,255,255,0.10);
-      border-radius:var(--radius);
-      padding:12px;
-      background:rgba(0,0,0,0.14);
-    }
-    .small{
-      font-size:12px;
-      color:var(--muted);
-    }
-    .big{
-      font-size:22px;
-      font-weight:900;
-      margin-top:6px;
-    }
-    .ok{color:var(--ok);font-weight:800}
-    .danger{color:var(--danger)}
-    .hr{
-      height:1px;
-      background:rgba(255,255,255,0.10);
-      margin:12px 0;
-    }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:12px;
-      font-size:12px;
-    }
-    th,td{
-      padding:10px 8px;
-      border-bottom:1px solid rgba(255,255,255,0.08);
-      text-align:right;
-      vertical-align:top;
-    }
-    th{
-      font-weight:700;
-      color:var(--muted);
-    }
-    th:first-child, td:first-child{
-      text-align:left;
-    }
+    
     .note{
-      margin-top:10px;
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.45;
+      font-size:13px;
+      color:var(--txt-muted);
+      line-height:1.5;
+      margin-top:16px;
+      padding:12px;
+      background:rgba(255,165,2,0.08);
+      border-left:3px solid var(--warning);
+      border-radius:var(--radius-sm);
     }
-    /* mobile: più spazio ai pulsanti e input */
-    @media (max-width:520px){
-      input{padding:14px 14px;font-size:15px}
-      button{padding:14px 16px;font-size:15px}
-      .btns{margin-top:14px}
+    
+    @media (max-width:600px){
+      .wrap{
+        padding:24px 16px 50px;
+      }
+      
+      h1{
+        font-size:28px;
+      }
+      
+      .card{
+        padding:20px;
+      }
+      
+      input, button{
+        font-size:16px;
+      }
+      
+      .kpi-value{
+        font-size:28px;
+      }
+      
+      .btns{
+        flex-direction:column;
+      }
+      
+      button{
+        width:100%;
+        justify-content:center;
+      }
+    }
+    
+    /* Loading animation */
+    @keyframes pulse{
+      0%, 100%{opacity:1}
+      50%{opacity:0.5}
+    }
+    
+    .loading{
+      animation:pulse 1.5s ease-in-out infinite;
     }
   </style>
 </head>
@@ -189,229 +492,88 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>Quando il Vicenza vincerà il campionato?</h1>
-      <p>Dati fissi: 14 partite rimanenti, Vicenza 62 punti, Villain 46 punti (gap 16).</p>
-      <p class="small">
-        Vicenza è campione quando il gap previsto supera il massimo recuperabile dal Villain:
-        <span class="pill">3 × partite rimanenti</span>.
+      <h1>🏆 Vicenza Clinch Calculator</h1>
+      <p class="subtitle">
+        Calcola quando il Vicenza vincerà matematicamente il campionato basandosi sulle medie punti attese
       </p>
+      <div class="pill">
+        📊 14 partite rimanenti • Vicenza 62pt vs Villain 46pt
+      </div>
     </header>
 
     <div class="grid">
       <section class="card">
-        <h2>Input utente</h2>
+        <h2>⚙️ Impostazioni</h2>
 
-        <div class="row">
+        <div class="input-group">
           <label>
-            Media punti attesa Vicenza (0–3)
-            <input id="mVicenza" type="number" step="0.01" min="0" max="3" value="2.10" />
+            <span class="label-text">
+              ⚽ Media punti Vicenza
+            </span>
+            <input 
+              id="mVicenza" 
+              type="number" 
+              step="0.01" 
+              min="0" 
+              max="3" 
+              value="2.10"
+              placeholder="es. 2.10"
+            />
           </label>
 
           <label>
-            Media punti attesa Villain (0–3)
-            <input id="mVillain" type="number" step="0.01" min="0" max="3" value="1.60" />
+            <span class="label-text">
+              🎯 Media punti Villain
+            </span>
+            <input 
+              id="mVillain" 
+              type="number" 
+              step="0.01" 
+              min="0" 
+              max="3" 
+              value="1.60"
+              placeholder="es. 1.60"
+            />
           </label>
         </div>
 
         <div class="btns">
-          <button id="calcBtn">Calcola</button>
-          <button id="shareBtn" class="secondary">Condividi link</button>
-          <button id="resetBtn" class="secondary">Reset</button>
+          <button id="calcBtn" class="btn-primary">
+            🚀 Calcola
+          </button>
+          <button id="shareBtn" class="btn-secondary">
+            📤 Condividi
+          </button>
+          <button id="resetBtn" class="btn-secondary">
+            🔄 Reset
+          </button>
         </div>
 
         <div class="note">
-          I punti in tabella sono mostrati come interi arrotondati.
+          💡 <strong>Logica:</strong> Vicenza è campione quando il gap previsto supera il massimo recuperabile dal Villain (3 × partite rimanenti)
         </div>
       </section>
 
       <aside class="card" aria-live="polite">
-        <h2>Risultato</h2>
+        <h2>📈 Risultato</h2>
 
-        <div class="kpi">
-          <div class="box">
-            <div class="small">Partite dalla fine</div>
-            <div id="fromEnd" class="big">—</div>
+        <div class="kpi-grid">
+          <div class="kpi-box">
+            <div class="kpi-label">Partite dalla fine</div>
+            <div id="fromEnd" class="kpi-value">—</div>
           </div>
-          <div class="box">
-            <div class="small">Dopo quante partite</div>
-            <div id="afterGames" class="big">—</div>
+          <div class="kpi-box">
+            <div class="kpi-label">Dopo k partite</div>
+            <div id="afterGames" class="kpi-value">—</div>
           </div>
         </div>
 
         <div class="hr"></div>
 
-        <div class="box">
-          <div class="small">Dettaglio</div>
-          <div id="detail" style="margin-top:6px;color:var(--muted);line-height:1.45">
-            Inserisci le medie e premi “Calcola”.
+        <div class="detail-box">
+          <div class="detail-label">📋 Dettaglio</div>
+          <div id="detail" class="detail-text">
+            Inserisci le medie punti e premi "Calcola" per vedere quando il Vicenza vincerà matematicamente.
           </div>
         </div>
-      </aside>
-    </div>
-
-    <section class="card" style="margin-top:14px">
-      <h2>Simulazione (k = 0..14)</h2>
-      <div class="small">
-        k = partite giocate da ora; R = partite rimanenti; B = 3×R; Punti = punti attesi (arrotondati a intero).
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Step</th>
-            <th>k</th>
-            <th>R</th>
-            <th>Punti Vicenza</th>
-            <th>Punti Villain</th>
-            <th>Gap atteso</th>
-            <th>Bottino max Villain</th>
-            <th>Esito</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </section>
-  </div>
-
-  <script>
-    // Costanti del problema
-    const R0 = 14;
-    const P_VICENZA0 = 62;
-    const P_VILLAIN0 = 46;
-    const GAP0 = P_VICENZA0 - P_VILLAIN0; // 16
-    const PTS_PER_MATCH_MAX = 3;
-
-    const $ = (id) => document.getElementById(id);
-
-    const clamp = (n, min, max) => Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : NaN;
-
-    // Arrotondamento a intero per visualizzare punti in tabella/UI
-    const int = (n) => Math.round(n);
-
-    function compute(mV, mVi){
-      const rows = [];
-      let clinchK = null;
-
-      for (let k = 0; k <= R0; k++){
-        const R = R0 - k;
-
-        const pv = P_VICENZA0 + k * mV;   // punti attesi (float)
-        const pvi = P_VILLAIN0 + k * mVi; // punti attesi (float)
-
-        const gap = pv - pvi;
-        const bounty = PTS_PER_MATCH_MAX * R;
-
-        const clinched = gap > bounty;
-        if (clinchK === null && clinched) clinchK = k;
-
-        rows.push({ k, R, pv, pvi, gap, bounty, clinched });
-      }
-
-      return { clinchK, rows };
-    }
-
-    function render(){
-      const mV = clamp(parseFloat($("mVicenza").value), 0, 3);
-      const mVi = clamp(parseFloat($("mVillain").value), 0, 3);
-
-      if (!Number.isFinite(mV) || !Number.isFinite(mVi)){
-        $("fromEnd").textContent = "—";
-        $("afterGames").textContent = "—";
-        $("detail").textContent = "Inserisci due numeri validi tra 0 e 3.";
-        $("tbody").innerHTML = "";
-        return;
-      }
-
-      $("mVicenza").value = mV.toFixed(2);
-      $("mVillain").value = mVi.toFixed(2);
-
-      const { clinchK, rows } = compute(mV, mVi);
-
-      // Render tabella
-      const tbody = $("tbody");
-      tbody.innerHTML = "";
-      rows.forEach((r, idx) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${idx + 1}</td>
-          <td>${r.k}</td>
-          <td>${r.R}</td>
-          <td>${int(r.pv)}</td>
-          <td>${int(r.pvi)}</td>
-          <td>${int(r.gap)}</td>
-          <td>${int(r.bounty)}</td>
-          <td class="${r.clinched ? "ok" : ""}">${r.clinched ? "Campione" : "Non ancora"}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      if (clinchK === null){
-        $("fromEnd").textContent = "—";
-        $("afterGames").textContent = "—";
-        $("detail").textContent =
-          `Con queste medie il Vicenza non diventa campione “in anticipo” entro ${R0} partite (gap previsto mai > 3×partite rimanenti).`;
-        return;
-      }
-
-      const fromEnd = R0 - clinchK;
-
-      const pvK = P_VICENZA0 + clinchK * mV;
-      const pviK = P_VILLAIN0 + clinchK * mVi;
-      const gapK = pvK - pviK;
-      const bountyK = PTS_PER_MATCH_MAX * fromEnd;
-
-      $("fromEnd").textContent = String(fromEnd);
-      $("afterGames").textContent = String(clinchK);
-
-      $("detail").textContent =
-        `Campione con ${fromEnd} partite dalla fine (dopo k=${clinchK}). In quel punto: Vicenza ${int(pvK)} pt, Villain ${int(pviK)} pt, gap ${int(gapK)}, bottino max Villain ${int(bountyK)} (=3×${fromEnd}).`;
-    }
-
-    function setFromQuery(){
-      const p = new URLSearchParams(location.search);
-      const mv = p.get("mv");
-      const mvi = p.get("mvi");
-      if (mv !== null) $("mVicenza").value = String(mv);
-      if (mvi !== null) $("mVillain").value = String(mvi);
-    }
-
-    function shareLink(){
-      const mv = parseFloat($("mVicenza").value);
-      const mvi = parseFloat($("mVillain").value);
-      const url = new URL(location.href);
-      url.searchParams.set("mv", Number.isFinite(mv) ? mv.toFixed(2) : "");
-      url.searchParams.set("mvi", Number.isFinite(mvi) ? mvi.toFixed(2) : "");
-      const text = url.toString();
-
-      if (navigator.share){
-        navigator.share({ title: document.title, url: text }).catch(() => {});
-      } else if (navigator.clipboard){
-        navigator.clipboard.writeText(text).then(() => {
-          $("detail").textContent = "Link copiato negli appunti.";
-        }).catch(() => {
-          $("detail").textContent = text;
-        });
-      } else {
-        $("detail").textContent = text;
-      }
-    }
-
-    function reset(){
-      $("mVicenza").value = "2.10";
-      $("mVillain").value = "1.60";
-      history.replaceState(null, "", location.pathname);
-      render();
-    }
-
-    // Init
-    setFromQuery();
-    render();
-
-    $("calcBtn").addEventListener("click", render);
-    $("shareBtn").addEventListener("click", shareLink);
-    $("resetBtn").addEventListener("click", reset);
-    $("mVicenza").addEventListener("input", render);
-    $("mVillain").addEventListener("input", render);
-  </script>
-</body>
-</html>
+      </as
