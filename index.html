@@ -3,197 +3,88 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Calcola quando il Vicenza vincerà matematicamente il campionato basandosi su punti attuali e medie punti attese." />
   <title>Vicenza Calculator</title>
-
   <style>
     :root{
-      --bg-dark:#050a1a;
-      --bg-grad-start:#0f1729;
-      --bg-grad-end:#1a2744;
-      --card-bg:rgba(255,255,255,0.03);
-      --card-border:rgba(255,255,255,0.08);
-      --txt:#f0f4ff;
-      --txt-muted:#a0aac8;
-      --accent:#00d9ff;
-      --success:#00ff88;
-      --success-bg:rgba(0,255,136,0.12);
-      --danger:#ff4757;
-      --warning:#ffa502;
-      --input-bg:rgba(0,0,0,0.3);
-      --input-border:rgba(255,255,255,0.12);
-      --shadow-md:0 4px 16px rgba(0,0,0,0.2);
-      --shadow-lg:0 8px 32px rgba(0,0,0,0.3);
-      --radius-sm:10px;
-      --radius-md:14px;
-      --radius-lg:18px;
+      --bg-grad-start:#0f1729; --bg-grad-end:#1a2744;
+      --card-bg:rgba(255,255,255,0.03); --card-border:rgba(255,255,255,0.08);
+      --txt:#f0f4ff; --txt-muted:#a0aac8; --accent:#00d9ff; --success:#00ff88;
+      --success-bg:rgba(0,255,136,0.12); --danger:#ff4757; --warning:#ffa502;
+      --input-bg:rgba(0,0,0,0.3); --input-border:rgba(255,255,255,0.12);
+      --shadow-md:0 4px 16px rgba(0,0,0,0.2); --shadow-lg:0 8px 32px rgba(0,0,0,0.3);
+      --radius-sm:10px; --radius-md:14px; --radius-lg:18px;
       --transition:all 0.25s cubic-bezier(0.4,0,0.2,1);
     }
-
     *{box-sizing:border-box;margin:0;padding:0}
     body{
-      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
-      background:linear-gradient(135deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
-      background-attachment:fixed;
-      color:var(--txt);
-      font-size:15px;
-      line-height:1.6;
-      min-height:100vh;
-      overflow-x:hidden;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+      background:linear-gradient(135deg,var(--bg-grad-start),var(--bg-grad-end));
+      background-attachment:fixed;color:var(--txt);min-height:100vh;overflow-x:hidden;
     }
-    body::before{
-      content:'';
-      position:fixed;
-      top:-50%;
-      right:-50%;
-      width:200%;
-      height:200%;
-      background:radial-gradient(circle, rgba(0,217,255,0.08) 0%, transparent 50%);
-      animation:rotate 60s linear infinite;
-      pointer-events:none;
-      z-index:0;
-    }
-    @keyframes rotate{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-
-    .wrap{max-width:1200px;margin:0 auto;padding:32px 20px 60px;position:relative;z-index:1}
-
+    .wrap{max-width:1200px;margin:0 auto;padding:32px 20px 60px}
     header{text-align:center;margin-bottom:34px}
     h1{
-      font-size:clamp(26px,5vw,40px);
-      font-weight:900;
-      background:linear-gradient(135deg, var(--accent) 0%, var(--success) 100%);
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-      background-clip:text;
-      margin-bottom:10px;
-      letter-spacing:-0.02em;
+      font-size:clamp(26px,5vw,40px);font-weight:900;letter-spacing:-0.02em;margin-bottom:10px;
+      background:linear-gradient(135deg,var(--accent),var(--success));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
     }
-    .subtitle{font-size:15px;color:var(--txt-muted);max-width:720px;margin:0 auto 14px}
-    .pill{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:8px 14px;background:rgba(0,217,255,0.15);
-      border:1px solid rgba(0,217,255,0.28);
-      border-radius:999px;font-size:13px;font-weight:700;color:var(--accent);
-    }
-
+    .subtitle{font-size:15px;color:var(--txt-muted);max-width:720px;margin:0 auto 14px;line-height:1.5}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+      background:rgba(0,217,255,0.15);border:1px solid rgba(0,217,255,0.28);color:var(--accent);font-size:13px;font-weight:700}
     .grid{display:grid;grid-template-columns:1.2fr 0.8fr;gap:20px;margin-bottom:20px}
-    @media (max-width:900px){.grid{grid-template-columns:1fr}}
-
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
     .card{
-      background:var(--card-bg);
-      backdrop-filter:blur(10px);
-      border:1px solid var(--card-border);
-      border-radius:var(--radius-lg);
-      padding:24px;
-      box-shadow:var(--shadow-md);
-      transition:var(--transition);
+      background:var(--card-bg);backdrop-filter:blur(10px);
+      border:1px solid var(--card-border);border-radius:var(--radius-lg);
+      padding:24px;box-shadow:var(--shadow-md);transition:var(--transition);
     }
     .card:hover{box-shadow:var(--shadow-lg);border-color:rgba(255,255,255,0.14)}
     .card h2{
-      font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;
-      color:var(--txt-muted);margin-bottom:18px;display:flex;align-items:center;gap:10px;
+      font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--txt-muted);
+      margin-bottom:18px;display:flex;align-items:center;gap:10px
     }
-    .card h2::before{
-      content:'';width:4px;height:18px;
-      background:linear-gradient(180deg, var(--accent), var(--success));
-      border-radius:2px;
-    }
-
-    form{display:block}
+    .card h2::before{content:'';width:4px;height:18px;border-radius:2px;background:linear-gradient(180deg,var(--accent),var(--success))}
     .input-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
-    @media (max-width:600px){.input-grid{grid-template-columns:1fr;gap:14px}}
-
+    @media(max-width:600px){.input-grid{grid-template-columns:1fr;gap:14px}}
     label{display:flex;flex-direction:column;gap:8px}
     .label-text{font-size:13px;font-weight:700;color:var(--txt-muted)}
     input{
-      width:100%;
-      padding:14px 16px;
-      background:var(--input-bg);
-      border:2px solid var(--input-border);
-      border-radius:var(--radius-md);
-      color:var(--txt);
-      font-size:16px;
-      font-weight:700;
-      outline:none;
-      transition:var(--transition);
+      width:100%;padding:14px 16px;border-radius:var(--radius-md);
+      background:var(--input-bg);border:2px solid var(--input-border);color:var(--txt);
+      font-size:16px;font-weight:700;outline:none;transition:var(--transition);
     }
     input:focus{border-color:var(--accent);background:rgba(0,217,255,0.05);box-shadow:0 0 0 4px rgba(0,217,255,0.10)}
-
     .btns{display:flex;gap:12px;flex-wrap:wrap}
     button{
       padding:14px 22px;border:none;border-radius:var(--radius-md);
       font-size:15px;font-weight:850;cursor:pointer;transition:var(--transition);
       display:inline-flex;align-items:center;justify-content:center;gap:8px;
     }
-    .btn-primary{
-      background:linear-gradient(135deg, var(--accent) 0%, var(--success) 100%);
-      color:var(--bg-dark);
-      box-shadow:0 6px 18px rgba(0,217,255,0.22);
-    }
-    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(0,217,255,0.30)}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),var(--success));color:#050a1a;box-shadow:0 6px 18px rgba(0,217,255,0.22)}
     .btn-secondary{background:rgba(255,255,255,0.08);color:var(--txt);border:1px solid rgba(255,255,255,0.14)}
-    .btn-secondary:hover{background:rgba(255,255,255,0.12)}
-    @media (max-width:600px){
-      .btns{flex-direction:column}
-      button{width:100%}
-    }
-
-    .note{
-      font-size:13px;color:var(--txt-muted);line-height:1.5;margin-top:16px;
-      padding:12px;background:rgba(255,165,2,0.08);
-      border-left:3px solid var(--warning);border-radius:var(--radius-sm);
-    }
-
+    @media(max-width:600px){.btns{flex-direction:column}button{width:100%}}
+    .note{font-size:13px;color:var(--txt-muted);line-height:1.5;margin-top:16px;padding:12px;background:rgba(255,165,2,0.08);
+      border-left:3px solid var(--warning);border-radius:var(--radius-sm)}
     .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-    .kpi-box{
-      background:rgba(0,0,0,0.25);
-      border:1px solid rgba(255,255,255,0.10);
-      border-radius:var(--radius-md);
-      padding:16px;
-      text-align:center;
-      transition:var(--transition);
-    }
+    .kpi-box{background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.10);border-radius:var(--radius-md);padding:16px;text-align:center}
     .kpi-label{font-size:12px;text-transform:uppercase;letter-spacing:0.5px;color:var(--txt-muted);margin-bottom:8px;font-weight:800}
     .kpi-value{
-      font-size:32px;font-weight:950;
-      background:linear-gradient(135deg, var(--accent), var(--success));
+      font-size:32px;font-weight:950;min-height:38px;
+      background:linear-gradient(135deg,var(--accent),var(--success));
       -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-      min-height:38px;
     }
-
-    .detail-box{
-      background:rgba(0,0,0,0.25);
-      border:1px solid rgba(255,255,255,0.10);
-      border-radius:var(--radius-md);
-      padding:16px;
-    }
+    .detail-box{background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.10);border-radius:var(--radius-md);padding:16px}
     .detail-label{font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--txt-muted);margin-bottom:8px;font-weight:900}
-    .detail-text{color:var(--txt);font-size:14px;line-height:1.6}
-
-    .table-wrapper{
-      overflow-x:auto;-webkit-overflow-scrolling:touch;
-      border-radius:var(--radius-md);
-      border:1px solid var(--card-border);
-      background:rgba(0,0,0,0.20);
-    }
+    .detail-text{font-size:14px;line-height:1.6}
+    .table-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius-md);border:1px solid var(--card-border);background:rgba(0,0,0,0.20)}
     table{width:100%;border-collapse:collapse;min-width:820px}
     thead{background:rgba(0,0,0,0.30);position:sticky;top:0;z-index:2}
-    th{
-      padding:14px 12px;text-align:right;font-size:11px;font-weight:900;
-      text-transform:uppercase;letter-spacing:0.5px;color:var(--txt-muted);
-      border-bottom:2px solid rgba(0,217,255,0.28);
-      white-space:nowrap;
-    }
-    th:first-child, td:first-child{text-align:left}
-    td{
-      padding:12px;text-align:right;font-size:14px;border-bottom:1px solid rgba(255,255,255,0.05);
-      white-space:nowrap;
-    }
+    th{padding:14px 12px;text-align:right;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.5px;color:var(--txt-muted);
+      border-bottom:2px solid rgba(0,217,255,0.28);white-space:nowrap}
+    th:first-child,td:first-child{text-align:left}
+    td{padding:12px;text-align:right;font-size:14px;border-bottom:1px solid rgba(255,255,255,0.05);white-space:nowrap}
     tbody tr:hover{background:rgba(0,217,255,0.05)}
-    .badge{
-      display:inline-block;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:900;
-      text-transform:uppercase;letter-spacing:0.4px;
-    }
+    .badge{display:inline-block;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:0.4px}
     .badge-success{background:var(--success-bg);color:var(--success);border:1px solid rgba(0,255,136,0.26)}
     .badge-pending{background:rgba(255,255,255,0.05);color:var(--txt-muted);border:1px solid rgba(255,255,255,0.10)}
   </style>
@@ -203,7 +94,7 @@
   <div class="wrap">
     <header>
       <h1>Vicenza Calculator</h1>
-      <p class="subtitle">Inserisci punti attuali e medie punti attese: il tool calcola a quante partite dalla fine il Vicenza “clincha” il campionato.</p>
+      <p class="subtitle">Inserisci punti attuali e medie punti attese: il tool calcola a quante partite dalla fine il Vicenza clincha.</p>
       <div class="pill">Regola: Villain può recuperare al massimo 3 × partite rimanenti</div>
     </header>
 
@@ -230,12 +121,15 @@
 
             <label>
               <span class="label-text">Media punti Vicenza (0–3)</span>
-              <input id="mVicenza" type="number" step="0.01" min="0" max="3" value="2.10" inputmode="decimal" />
+              <!-- iOS-friendly: text + inputmode decimal, accetta 1,6 e 1.6 -->
+              <input id="mVicenza" type="text" inputmode="decimal" autocomplete="off" autocapitalize="off" spellcheck="false"
+                     value="2.10" placeholder="es. 2,10" />
             </label>
 
             <label>
               <span class="label-text">Media punti Villain (0–3)</span>
-              <input id="mVillain" type="number" step="0.01" min="0" max="3" value="1.60" inputmode="decimal" />
+              <input id="mVillain" type="text" inputmode="decimal" autocomplete="off" autocapitalize="off" spellcheck="false"
+                     value="1.60" placeholder="es. 1,60" />
             </label>
           </div>
 
@@ -246,8 +140,7 @@
           </div>
 
           <div class="note">
-            Logica: a step k, gap previsto = (puntiVicenza + k·mV) − (puntiVillain + k·mVi).<br/>
-            Il Vicenza è campione quando gap previsto &gt; 3 × (partite rimanenti dopo k).
+            Tip mobile: puoi scrivere decimali con virgola (es. 1,75). La pagina li interpreta correttamente. [web:205]
           </div>
         </form>
       </section>
@@ -275,10 +168,6 @@
 
     <section class="card">
       <h2>Simulazione</h2>
-      <p class="subtitle" style="text-align:left;margin-bottom:14px;font-size:13px">
-        k = partite giocate da ora • R = rimanenti • B = 3×R • punti = arrotondati a intero
-      </p>
-
       <div class="table-wrapper">
         <table>
           <thead>
@@ -304,12 +193,22 @@
     const int = (n) => Math.round(n);
     const clamp = (n, min, max) => Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : NaN;
 
+    // Accetta "1,75" o "1.75" (locale-friendly). parseFloat() non gestisce la virgola. [web:205]
+    function parseLocaleNumber(raw){
+      if (raw === null || raw === undefined) return NaN;
+      const s = String(raw).trim()
+        .replace(/\s+/g, "")
+        .replace(",", "."); // semplice e sufficiente per range 0..3
+      return parseFloat(s);
+    }
+
     function readInputs(){
       const pV = parseFloat($("pVicenza").value);
       const pVi = parseFloat($("pVillain").value);
       const R0 = parseInt($("remaining").value, 10);
-      const mV = parseFloat($("mVicenza").value);
-      const mVi = parseFloat($("mVillain").value);
+
+      const mV = parseLocaleNumber($("mVicenza").value);
+      const mVi = parseLocaleNumber($("mVillain").value);
 
       return { pV, pVi, R0, mV, mVi };
     }
@@ -318,9 +217,8 @@
       if (!Number.isFinite(pV) || pV < 0) return "Inserisci punti Vicenza validi (>=0).";
       if (!Number.isFinite(pVi) || pVi < 0) return "Inserisci punti Villain validi (>=0).";
       if (!Number.isInteger(R0) || R0 < 0) return "Inserisci partite rimanenti valide (intero >=0).";
-      const mV2 = clamp(mV, 0, 3);
-      const mVi2 = clamp(mVi, 0, 3);
-      if (!Number.isFinite(mV2) || !Number.isFinite(mVi2)) return "Inserisci medie punti valide tra 0 e 3.";
+      if (!Number.isFinite(mV) || mV < 0 || mV > 3) return "Media punti Vicenza non valida (0–3).";
+      if (!Number.isFinite(mVi) || mVi < 0 || mVi > 3) return "Media punti Villain non valida (0–3).";
       return null;
     }
 
@@ -340,7 +238,6 @@
 
         rows.push({ step: k + 1, k, R, pvK, pviK, gapK, bountyK, clinched });
       }
-
       return { clinchK, rows };
     }
 
@@ -352,21 +249,13 @@
         $("fromEnd").textContent = "—";
         $("afterGames").textContent = "—";
         $("detail").textContent = "⚠️ " + err;
-        $("tbody").innerHTML = `<tr><td colspan="8" style="text-align:center;padding:22px;color:#ff98a0">Valori non validi</td></tr>`;
+        $("tbody").innerHTML = `<tr><td colspan="8" style="text-align:center;padding:22px;color:${getComputedStyle(document.documentElement).getPropertyValue('--danger')}">Valori non validi</td></tr>`;
         return;
       }
 
-      // Normalizza formato campi (utile su mobile)
-      $("pVicenza").value = String(int(inputs.pV));
-      $("pVillain").value = String(int(inputs.pVi));
-      $("remaining").value = String(inputs.R0);
-      $("mVicenza").value = clamp(inputs.mV, 0, 3).toFixed(2);
-      $("mVillain").value = clamp(inputs.mVi, 0, 3).toFixed(2);
+      const { clinchK, rows } = computeScenario(inputs);
 
-      const normalized = readInputs();
-      const { clinchK, rows } = computeScenario(normalized);
-
-      // Tabella
+      // tabella
       const tbody = $("tbody");
       tbody.innerHTML = "";
       rows.forEach(r => {
@@ -384,49 +273,49 @@
         tbody.appendChild(tr);
       });
 
-      // Risultato (fix: sempre valorizzato)
+      // risultato
       if (clinchK === null){
         $("fromEnd").textContent = "—";
         $("afterGames").textContent = "—";
-        $("detail").innerHTML =
-          `Con questi input, il Vicenza non clincha “in anticipo” entro ${normalized.R0} partite (gap previsto mai &gt; 3×partite rimanenti).`;
+        $("detail").textContent = `Con questi input, il Vicenza non clincha “in anticipo” entro ${inputs.R0} partite.`;
         return;
       }
 
-      const fromEnd = normalized.R0 - clinchK;
-
-      const pv = normalized.pV + clinchK * normalized.mV;
-      const pvi = normalized.pVi + clinchK * normalized.mVi;
+      const fromEnd = inputs.R0 - clinchK;
+      const pv = inputs.pV + clinchK * inputs.mV;
+      const pvi = inputs.pVi + clinchK * inputs.mVi;
       const gap = pv - pvi;
       const bounty = 3 * fromEnd;
 
       $("fromEnd").textContent = String(fromEnd);
       $("afterGames").textContent = String(clinchK);
+      $("detail").textContent =
+        `Campione con ${fromEnd} partite dalla fine (tra ${clinchK} partite). Vicenza ${int(pv)} pt, Villain ${int(pvi)} pt, gap ${int(gap)}, bottino max ${int(bounty)} (=3×${fromEnd}).`;
+    }
 
-      $("detail").innerHTML =
-        `🏆 Campione con <strong>${fromEnd}</strong> partite dalla fine (tra <strong>${clinchK}</strong> partite).<br/>
-         In quel punto: Vicenza ${int(pv)} pt, Villain ${int(pvi)} pt, gap ${int(gap)}, bottino max ${int(bounty)} (=3×${fromEnd}).`;
+    function normalizeDecimalsOnBlur(){
+      // Normalizza solo quando l’utente esce dal campo: evita che iOS “impazzisca” durante la digitazione. [web:191]
+      ["mVicenza","mVillain"].forEach(id => {
+        const el = $(id);
+        const v = parseLocaleNumber(el.value);
+        if (Number.isFinite(v)) el.value = clamp(v, 0, 3).toFixed(2);
+      });
     }
 
     function shareLink(){
       const inputs = readInputs();
       const url = new URL(location.href);
-
       url.searchParams.set("pv", Number.isFinite(inputs.pV) ? int(inputs.pV) : "");
       url.searchParams.set("pvi", Number.isFinite(inputs.pVi) ? int(inputs.pVi) : "");
       url.searchParams.set("r", Number.isInteger(inputs.R0) ? inputs.R0 : "");
       url.searchParams.set("mv", Number.isFinite(inputs.mV) ? clamp(inputs.mV, 0, 3).toFixed(2) : "");
       url.searchParams.set("mvi", Number.isFinite(inputs.mVi) ? clamp(inputs.mVi, 0, 3).toFixed(2) : "");
-
       const text = url.toString();
+
       if (navigator.share){
         navigator.share({ title: document.title, url: text }).catch(() => {});
       } else if (navigator.clipboard){
-        navigator.clipboard.writeText(text).then(() => {
-          $("detail").textContent = "✅ Link copiato negli appunti!";
-        }).catch(() => {
-          $("detail").textContent = text;
-        });
+        navigator.clipboard.writeText(text).then(() => $("detail").textContent = "✅ Link copiato negli appunti!").catch(() => $("detail").textContent = text);
       } else {
         $("detail").textContent = text;
       }
@@ -434,7 +323,6 @@
 
     function setFromQuery(){
       const p = new URLSearchParams(location.search);
-
       if (p.get("pv") !== null) $("pVicenza").value = p.get("pv");
       if (p.get("pvi") !== null) $("pVillain").value = p.get("pvi");
       if (p.get("r") !== null) $("remaining").value = p.get("r");
@@ -452,20 +340,19 @@
       render();
     }
 
-    // Eventi: submit affidabile + input live (mobile-friendly) [web:191]
-    $("calcForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      render();
-    });
+    // Submit (affidabile su mobile) [web:191]
+    $("calcForm").addEventListener("submit", (e) => { e.preventDefault(); normalizeDecimalsOnBlur(); render(); });
 
-    ["pVicenza","pVillain","remaining","mVicenza","mVillain"].forEach(id => {
-      $(id).addEventListener("input", render);
-    });
+    // Live update: ok anche su iOS, ma senza “forzare” formati mentre scrivi [web:191]
+    ["pVicenza","pVillain","remaining","mVicenza","mVillain"].forEach(id => $(id).addEventListener("input", render));
 
-    $("shareBtn").addEventListener("click", shareLink);
+    // Normalizza solo su blur
+    $("mVicenza").addEventListener("blur", () => { normalizeDecimalsOnBlur(); render(); });
+    $("mVillain").addEventListener("blur", () => { normalizeDecimalsOnBlur(); render(); });
+
+    $("shareBtn").addEventListener("click", () => { normalizeDecimalsOnBlur(); shareLink(); });
     $("resetBtn").addEventListener("click", resetAll);
 
-    // Init
     setFromQuery();
     render();
   </script>
